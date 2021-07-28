@@ -1,38 +1,33 @@
 'use strict';
 
-const urlEnKey = 'IEn1HAcY%2BEqkVWTn5g7hUuIquNG3RsrqoYajTMd0VAvWRbwc6rJoja%2FrwmGJ3AIUpsQtqcitHJ2GOruzwlIVfw%3D%3D';
-const urlDeKey = 'IEn1HAcY+EqkVWTn5g7hUuIquNG3RsrqoYajTMd0VAvWRbwc6rJoja/rwmGJ3AIUpsQtqcitHJ2GOruzwlIVfw==';
-
 const search_year = document.querySelector("#search_year");
 const search_month = document.querySelector("#search_month");
 const search_btn = document.querySelector("#search_btn");
+const result = document.querySelector("#result");
 
 //검색 버튼
 search_btn.onclick = () => {
-    load_data(search_year.value, search_month.value);
+    load_data('getHoliDeInfo', search_year.value, search_month.value, result.querySelector('#getHoliDeInfo')); // 국경일
+    load_data('getRestDeInfo', search_year.value, search_month.value, result.querySelector('#getRestDeInfo')); // 공휴일
+    load_data('getAnniversaryInfo', search_year.value, search_month.value, result.querySelector('#getAnniversaryInfo')); // 기념일
+    load_data('get24DivisionsInfo', search_year.value, search_month.value, result.querySelector('#get24DivisionsInfo')); // 24절기
+    load_data('getSundryDayInfo', search_year.value, search_month.value, result.querySelector('#getSundryDayInfo')); // 잡절
 }
 
-const load_data = (year, month) => {
-    const baseUrl = 'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/';
-    const service = 'getHoliDeInfo';
-    let url = baseUrl + service + '?solYear=' + year + '&ServiceKey=' + urlEnKey + '&_type=json';
-    if(month >= 1 && month <=12){ url += '&solMonth='+month; }
-
-    fetch(url,
+const load_data = (serviceUrl, year, month, print_div) => {
+    fetch('./data_load.php?serviceUrl='+serviceUrl+'&year='+year+'&month='+month,
         {
-            method: "POST",
+            method: "GET",
+            mode: 'cors',
             headers: {
-                "Content-Type":"text/xml",
-                "Access-Control-Allow-Origin":"*",
-                "Access-Control-Allow-Headers":"X-Requested-With"
+                "Content-Type":"application/json",
             },
-            body: JSON.stringify({
-            })
         }
     )
     .then((response)=>response.json())
     .then((data)=>{
-        console.log(data);
+        //console.log(data);
+        print_div.querySelector('.content').innerHTML=data;
     })
     .catch(function (error) { console.log(error); });
 }
